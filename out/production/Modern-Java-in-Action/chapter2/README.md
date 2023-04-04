@@ -65,6 +65,151 @@ public static List<Apple> filterApplesByWeight(List<Apple> inventory, int weight
 `DRY(don't repeat yourself): 같은 것을 반복하지 말자.`  
   
 ### 세 번째 시도: 가능한 모든 속성으로 필터링
+색이나 무게 중 어떤 것을 기준으로 필터링할지 가리키는 플래그를 추가하자. (실전에서 절대 사용X)  
+````java
+filterApples(List<Apple> inventory, Color color, int weight, boolean flag)
+
+List<Apple> greenApples = filterApples(inventory, GREEN, 0, true);
+List<Apple> heavyApples = filterApples(inventory, null, 150, false);
+````
+**형편없는 코드**  
+true, false가 뭘 의미하는 건지 알 수 없고 요구사항이 바뀌었을 때 유연하게 대응할 수 없다.  
+`동작 파라미터화`를 이용해서 유연성을 얻는 방법을 보자.  
+  
+## 2. 동작 파라미터화
+참 또는 거짓을 반환하는 함수를 `프레디케이트`라고 한다.  
+`선택 조건을 결정하는 인터페이스`를 정의하자.  
+````java
+interface ApplePredicate {
+
+    boolean test(Apple a);
+
+}
+````  
+### 전략 디자인 패턴
+- 각 알고리즘(전략이라 불리는)을 캡슐화하는 알고리즘 패밀리를 정의해둔 다음에 런타임에 알고리즘을 선택하는 기법이다.
+  - ApplePredicate가 알고리즘 패밀리
+  - AppleHeavyWeightPredicate와 AppleGreenColorPredicate가 전략이다.
+- 객체가 할 수 있는 행위를 전략으로 만들고 동적으로 행위의 수정이 필요한 경우 전략으로 바꾸는 것만으로도 행위의 수정이 가능하도록 만든 패턴  
+ 
+다음 예제처럼 다양한 선택 조건을 대표하는 여러 버전의 ApplePredicate를 정의할 수 있다.  
+```java
+static class AppleWeightPredicate implements ApplePredicate {
+
+    @Override // 무거운 사과만 선택
+    public boolean test(Apple apple) {
+        return apple.getWeight() > 150;
+    }
+
+}
+```
+
+```java
+static class AppleColorPredicate implements ApplePredicate {
+
+    @Override // 녹색 사과만 선택
+    public boolean test(Apple apple) {
+        return apple.getColor() == Color.GREEN;
+    }
+
+}
+```
+메서드가 다양한 동작을 받아서 내부적으로 다양한 동작을 수행할 수 있다.  
+  
+### 네 번째 시도: 추상적 조건으로 필터링
+조건: 150 이상 빨간 사과 
+```java
+static class AppleRedAndHeavyPredicate implements ApplePredicate {
+
+    @Override
+    public boolean test(Apple apple) {
+        return apple.getColor() == Color.RED && apple.getWeight() > 150;
+    }
+
+}
+
+List<Apple> redAndHeavyApples = filterApples(inventory, new AppleRedAndHeavyPredicate());
+```  
+### 퀴즈1 
+유연한 prettyPrintApple 메서드 구현하기
+
+## 3. 간소화
+
+### 익명 클래스
+익명 클래스: 클래스 선언과 인스턴스화를 동시에 수행할 수 있다.  
+즉석에서 필요한 구현을 만들어서 사용할 수 있다.    
+
+### 다섯 번째 시도: 익명 클래스 사용  
+```java
+List<Apple> redApples = FilteringApple.filterApples(inventory, new ApplePredicate() {
+    
+    @Override
+    public boolean test(Apple apple) {
+        return RED.equals(apple.getColor());
+    }
+});
+```
+코드의 장황함은 나쁜 특성이다. 따라서 이 코드는 별로다.
+### 퀴즈2
+
+### 여섯 번째 시도: 람다 표현식 사용
+```java
+List<Apple> result = 
+    filterApples(inventory, (Apple apple) -> RED.equals(apple.getColor()));
+```
+
+### 일곱 번째 시도: 리스트 형식으로 추상화
+```java
+public static <T> List<T> filter(List<T> list, Predicate<T> p) {
+    List<T> result = new ArrayList<>();
+    
+    for (T e : list) {
+        if (p.test(e)) {
+            result.add(e);
+        }
+    }
+    return result;
+}
+```
+
+## 4. 실전 예제
+
+### Comparator로 정렬하기
+```java
+// 익명클래스 이용
+inventory.sort(new Comparator<Apple>() {
+    @Override
+    public int compare(Apple o1, Apple o2) {
+        return o1.getWeight().compareTo(o2.getWeight());
+    }
+});
+
+// 람다식 이용
+inventory.sort((a1, a2)->a1.getWeight().compareTo(a2.getWeight()));
+```
+
+### Runnable로 코드 블록 실행하기
+```java
+// 익명클래스 이용
+Thread t = new Thread(new Runnable() {
+    @Override
+    public void run() {
+        System.out.println("hello World");
+    }
+});
+t.run();
+
+// 람다식 이용
+Thread t = new Thread(() -> System.out.println("hello World"));
+t.run();
+```
+
+
+
+
+
+
+ 
 
 
 
