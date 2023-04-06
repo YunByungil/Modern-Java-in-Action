@@ -47,4 +47,15 @@ ex) Comparator, Runnable
   
 람다 표현식으로 함수형 인터페이스의 추상 메서드 구현을 직접 전달할 수 있으므로   
 `전체 표현식을 함수형 인터페이스의 인스턴스 취급`할 수 있다.  
+### [간단한 예제](https://github.com/YunByungil/Modern-Java-in-Action/blob/main/src/chapter3/Main.java)
+
+### 함수 디스크립터
+람다 표현식의 시그너처를 서술하는 메서드   
+    
+() -> void : 파라미터 리스트가 없으며 void 를 반환하는 함수: Runnable  
+
+(Apple, Apple) -> int: 두 개의 Apple을 인수로 받아 int를 반환하는 함수
+
+## 3. 람다 활용: 실행 어라운드 패턴
+  
 
