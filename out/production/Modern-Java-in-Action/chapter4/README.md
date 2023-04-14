@@ -129,7 +129,53 @@ System.out.println("highCaloricDishes = " + highCaloricDishes);
 
 // 내부 반복
 // filter 패턴을 사용한다.
+    List<String> high =
+                    menu.stream()
+                    .filter(d -> d.getCalories() > 300)
+                    .map(Dish::getName)
+                    .collect(Collectors.toList());
+System.out.println("high = " + high);
 ```
+## 4. 스트림 연산
+### 중간 연산
+filter나 sorted 같은 중간 연산은 다른 스트림을 반환한다.  
+  
+여러 중간 연산을 연결해서 질의를 만들 수 있다.  
+  
+중간 연산을 합친 다음에 합쳐진 중간 연산을 최종 연산으로 한 번에 처리한다.  
+
+### 최종 연산
+List, Integer, void 등 스트림 이외의 결과를 반환한다.  
+```java
+long count = menu.stream()
+        .filter (d -> d.getCalories() > 300)
+        .distinct()
+        .limit(3)
+        .count();
+// 중간 연산: filter, distinct, limit
+// 최종 연산: count
+```
+  
+### 마무리
+- 스트림은 소스에서 추출된 연속 요소로, 데이터 처리 연산을 지원한다.
+- 스트림은 내부 반복을 지원한다. filter, map, sorted등의 연산으로 반복을 추상화한다.
+- 스트림에는 중간 연산과 최종 연산이 있다.
+- 중간 연산은 filter와 map처럼 스트림을 반환하면서 다른 연산과 연결되는 연산이다.
+  - 중간 연산으로는 어떤 결과도 생성할 수 없다.
+- forEach나 count처럼 스트림 파이프라인을 처리해서 스트림이 아닌 결과를 반환하는 연산을 최종 연산이라고 한다.
+- 스트림의 요소는 요청할 때 게으르게 계산된다.
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   

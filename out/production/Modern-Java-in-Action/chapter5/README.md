@@ -304,9 +304,6 @@ System.out.println("count = " + count);
 long count = menu.stream().count();
 ```
 
-### Quiz4: Git 참고
-
-
 
 
 
