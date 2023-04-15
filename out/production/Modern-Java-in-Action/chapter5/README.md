@@ -304,6 +304,70 @@ System.out.println("count = " + count);
 long count = menu.stream().count();
 ```
 
+### Quiz4: Git 참고
+https://github.com/YunByungil/Modern-Java-in-Action/blob/main/src/chapter5/quiz1/Q4.java  
+  
+### 숫자형 스트림
+reduce 메서드로 스트림 요소의 합을 구하는 예제를 살펴봤다.  
+예를 들어 다음처럼 메뉴의 칼로리 합계를 계산할 수 있다.  
+  
+```java
+int calories = menu.stream()
+                    .map(Dish::getCalories)
+                    .reduce(0, Integer::max);
+```
+이 코드는 박싱 비용이 숨어있다.  
+내부적으로 합계를 계산하기 전에 Integer를 기본형으로 언박싱해야 한다.  
+  
+### 기본형 특화 스트림
+1. 숫자 스트림으로 매핑  
+
+mapToInt, mapToDouble, mapToLong 세 가지 메서드를 가장 많이 사용한다.  
+이들 메서드는 map과 정확히 같은 기능을 수행하지만, Stream<T> 대신 특화된 스트림을 반환한다.  
+  
+```java
+int calories = menu.stream()
+                    .mapToInt(Dish::getCalories)
+                    .sum(); 
+```  
+mapToInt 메서드는 각 요리에서 모든 칼로리(Integer)를 추출한 다음  
+  
+IntStream(Stream<Integer>가 아님)을 반환한다.  
+  
+2. 객체 스트림으로 복원하기  
+숫자 스트림을 만든 다음에, 원상태인 특화되지 않은 스트림으로 복원하자.  
+  
+IntStream은 기본형의 정수값만 만들 수 있다.  
+Dish같은 다른 값을 반환하고 싶으면? -> boxed 메서드를 이용해서 일반 스트림으로 변환할 수 있다.  
+  
+```java
+IntStream intStream = menu.stream()
+                            .mapToInt(Dish::getCalories);
+Stream<Integer> stream = intStream.boxed();
+```
+  
+3. 기본값: OptionalInt  
+IntStream에서 최댓값을 찾을 때는 0이라는 기본값 때문에 잘못된 결과가 도출될 수 있다.  
+  
+스트림에 요소가 없는 상황과 실제 최댓값이 0인 상황을 어떻게 구별할 수 있을까?  
+  
+```java
+OptionalInt maxCalories = menu.stream()
+                                .mapToInt(Dish::getCalories)
+                                .max();
+int max = maxCalories.orElse(1); // 값이 없을 때 기본 최댓값을 명시적으로 설정
+```
+
+### 숫자 범위
+- range: 시작값과 종료값 제외
+- rangeClosed: 시작값 종료값 포함
+
+
+
+
+
+
+
 
 
 

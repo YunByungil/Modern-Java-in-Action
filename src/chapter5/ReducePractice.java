@@ -1,8 +1,12 @@
 package chapter5;
 
+import chapter4.Dish;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
+import java.util.stream.IntStream;
 
 public class ReducePractice {
     public static void main(String[] args) {
@@ -18,5 +22,10 @@ public class ReducePractice {
 
         Optional<Integer> min = numbers.stream().reduce(Integer::min);
         min.ifPresent(System.out::println);
+
+        IntStream evenNumbers = IntStream.rangeClosed(1, 100)
+                .filter(n -> n % 2 == 0);
+        System.out.println("evenNumbers.count() = " + evenNumbers.count());
+
     }
 }

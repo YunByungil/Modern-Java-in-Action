@@ -305,6 +305,89 @@ long count = menu.stream().count();
 ```
 
 ### Quiz4: Git 참고
+https://github.com/YunByungil/Modern-Java-in-Action/blob/main/src/chapter5/quiz1/Q4.java  
+  
+### 숫자형 스트림
+reduce 메서드로 스트림 요소의 합을 구하는 예제를 살펴봤다.  
+예를 들어 다음처럼 메뉴의 칼로리 합계를 계산할 수 있다.  
+  
+```java
+int calories = menu.stream()
+                    .map(Dish::getCalories)
+                    .reduce(0, Integer::max);
+```
+이 코드는 박싱 비용이 숨어있다.  
+내부적으로 합계를 계산하기 전에 Integer를 기본형으로 언박싱해야 한다.  
+  
+### 기본형 특화 스트림
+1. 숫자 스트림으로 매핑  
+
+mapToInt, mapToDouble, mapToLong 세 가지 메서드를 가장 많이 사용한다.  
+이들 메서드는 map과 정확히 같은 기능을 수행하지만, Stream<T> 대신 특화된 스트림을 반환한다.  
+  
+```java
+int calories = menu.stream()
+                    .mapToInt(Dish::getCalories)
+                    .sum(); 
+```  
+mapToInt 메서드는 각 요리에서 모든 칼로리(Integer)를 추출한 다음  
+  
+IntStream(Stream<Integer>가 아님)을 반환한다.  
+  
+2. 객체 스트림으로 복원하기  
+숫자 스트림을 만든 다음에, 원상태인 특화되지 않은 스트림으로 복원하자.  
+  
+IntStream은 기본형의 정수값만 만들 수 있다.  
+Dish같은 다른 값을 반환하고 싶으면? -> boxed 메서드를 이용해서 일반 스트림으로 변환할 수 있다.  
+  
+```java
+IntStream intStream = menu.stream()
+                            .mapToInt(Dish::getCalories);
+Stream<Integer> stream = intStream.boxed();
+```
+  
+3. 기본값: OptionalInt  
+IntStream에서 최댓값을 찾을 때는 0이라는 기본값 때문에 잘못된 결과가 도출될 수 있다.  
+  
+스트림에 요소가 없는 상황과 실제 최댓값이 0인 상황을 어떻게 구별할 수 있을까?  
+  
+```java
+OptionalInt maxCalories = menu.stream()
+                                .mapToInt(Dish::getCalories)
+                                .max();
+int max = maxCalories.orElse(1); // 값이 없을 때 기본 최댓값을 명시적으로 설정
+```
+
+### 숫자 범위
+- range: 시작값과 종료값 제외
+- rangeClosed: 시작값 종료값 포함
+```java
+IntStream evenNumbers = IntStream.rangeClosed(1, 100)
+                                    .filter(n -> n % 2 == 0);
+System.out.println("evenNumbers.count() = " + evenNumbers.count()); // 짝수 50개 반환
+```
+
+## 마치며
+- 스트림 API를 이용하면 복잡한 데이터 처리 질의를 표현할 수 있다.
+- filter, distinct, takeWhile(자바 9), dropWhile(자바 9), skip, limit 메서드로 스트림을 필터링하거나 자를 수 있다.
+- 소스가 정렬되어 있다는 사실을 알고 있을 때 takeWhile과 dropWhile 메서드를 효과적으로 사용할 수 있다.
+- map, flatMap 메서드로 스트림의 요소를 추출하거나 변환할 수 있다.
+- findFirst, findAny 메서드로 스트림의 요소를 검색할 수 있다.
+- allMatch, noneMatch, anyMatch 메서드를 이용해서 주어진 프레디케이트와 일치하는 요소를 스트림에서 검색할 수 있다.
+- 이들 메서드는 쇼트서킷(short-circuit), 즉 결과를 찾는 즉시 반환하며, 전체 스트림을 처리하지는 않는다.
+- reduce 메서드로 스트림의 모든 요소를 반복 조합하며 값을 도출할 수 있다. 예를 들어 reduce로 스트림의 최댓값이나 모든 요소의 합계를 계산할 수 있다.
+- filter, map 등은 상태를 저장하지 않는 상태 없는 연산이다.  
+reduce 같은 연산은 값을 계산하는 데 필요한 상태를 저장한다.  
+sorted, distinct 등의 메서드는 새로운 스트림을 반환하기에 앞서 스트림의 모든 요소를 버퍼에 저장해야 한다.  
+이런 메서드를 상태 있는 연산이라고 부른다. 
+- IntStream, DoubleStream, LongStream은 기본형 특화 스트림이다. 이들 연산은 각각의 기본형에 맞게 특화되어 있다.
+
+
+
+
+
+
+
 
 
 
